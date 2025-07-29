@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lord of the Rings LCG - Round Order</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .navigation button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .navigation button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .navigation button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            color: #ecf0f1;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            background: rgba(52, 152, 219, 0.3);
+            border-bottom-color: #3498db;
+            color: #ffffff;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+            max-height: calc(100vh - 140px);
+        }
+
+        .selector {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-right: 2px solid #bdc3c7;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .details {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .step {
+            background: white;
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .step.selected {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            transform: translateX(10px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .substep {
+            background: #f8f9fa;
+            margin: 6px 0 6px 20px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 3px solid #95a5a6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .substep:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .substep.selected {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.4);
+        }
+
+        .action-window {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .action-window.selected {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .phase-header {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 15px;
+            margin: 15px 0 10px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(142, 68, 173, 0.3);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        strong {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        em {
+            color: #3498db;
+            font-style: italic;
+        }
+
+        .page-ref {
+            background: #ecf0f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .phase-number {
+            background: #34495e;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .step-number {
+            background: #3498db;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        @media screen and (max-width: 926px) and (orientation: landscape) {
+            body {
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            .container {
+                height: calc(100vh - 120px);
+                max-height: none;
+            }
+            
+            .selector, .details {
+                font-size: 12px;
+                padding: 10px;
+            }
+            
+            .step {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .substep {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .navigation button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <button id="upButton">↑ Previous</button>
+        <button id="downButton">↓ Next</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="turn-flow">Turn Flow</button>
+        <button class="tab" data-tab="setup">Setup</button>
+        <button class="tab" data-tab="combat">Combat Details</button>
+        <button class="tab" data-tab="help">Help</button>
+    </div>
+
+    <div class="tab-content active" id="turn-flow">
+        <div class="container">
+            <div class="selector" id="list">
+                <div class="phase-header">0.0 Round Begins</div>
+                
+                <div class="phase-header">I. RESOURCE PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the resource phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 22)">1.1 Resource phase begins</div>
+                <div class="step" data-detail="Each player simultaneously adds 1 resource to each of their heroes' resource pools. Resources are the game's currency and are used to pay for cards and card abilities. Resource tokens begin the game in the token bank. When a hero gains resources, transfer them from the token bank to the hero's resource pool. (Rules Reference p. 22, 14)">1.2 Gain resources</div>
+                <div class="step" data-detail="Each player simultaneously draws 1 card. When a player is instructed to draw one or more cards, those cards are drawn from the top of their deck. Drawn cards are added to a player's hand. There is no limit to the number of cards a player may draw each round. There is no maximum hand size. (Rules Reference p. 22, 6)">1.3 Draw cards</div>
+                <div class="step action-window" data-detail="This step formalizes the end of the resource phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. This is an action window where players may trigger action abilities. (Rules Reference p. 22)">1.4 Resource phase ends</div>
+
+                <div class="phase-header">II. PLANNING PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the planning phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 22)">2.1 Planning phase begins</div>
+                <div class="step action-window" data-detail="This is a special action window in which the active player (in addition to triggering standard action abilities) is permitted to play ally and attachment cards from their hand. To play a card from hand, a player must pay the card's resource cost by spending resource tokens from the resource pools of one or more of their heroes that match the sphere of influence of the card being played. Spent resources are removed from heroes' resource pools and returned to the general token bank. This action window remains open until all players consecutively pass. (Rules Reference p. 22-23)">2.2 Planning action window</div>
+                <div class="step" data-detail="The next player (in player order) becomes the active player. Return to step 2.2. If all players have been the active player this phase, proceed. (Rules Reference p. 23)">2.3 Next player (in player order) becomes active player</div>
+                <div class="step" data-detail="This step formalizes the end of the planning phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. (Rules Reference p. 23)">2.4 Planning phase ends</div>
+
+                <div class="phase-header">III. QUEST PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the quest phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 23)">3.1 Quest phase begins</div>
+                <div class="step action-window" data-detail="In player order, each player has an opportunity to commit any number of their characters to the quest. To commit a character to a quest, a player must exhaust the character. Characters committed to a quest are considered committed to that quest through the end of the quest phase, unless a card ability removes them from the quest. Those characters do not ready at the end of this step. (Rules Reference p. 23)">3.2 Commit characters</div>
+                <div class="step action-window" data-detail="The encounter deck reveals one card per player. This is known in the game as 'staging.' These cards are revealed one at a time, with any when revealed abilities being resolved before the next card is revealed. Enemy, location, and objective cards revealed in this manner are placed in the staging area. Treachery cards are resolved and (unless otherwise indicated by the card text) placed in the discard pile. If the encounter deck is ever empty during the quest phase, the encounter discard pile is shuffled and reset back into the encounter deck. (Rules Reference p. 23)">3.3 Staging</div>
+                <div class="step action-window" data-detail="Compare the combined willpower strength (Ò) of all committed characters against the combined threat strength ($) of all cards in the staging area. If the Ò is higher, the players have successfully quested, and they make progress on the quest. A number of progress tokens equal to the amount by which their Ò overcame the $ are placed on the current quest card. Note: If there is an active location, progress tokens are placed on that location until it is explored, and the remainder are then placed on the current quest. If the $ is higher, the players have unsuccessfully quested and they are driven back by the encounter deck. Each player must raise their threat dial by the amount by which the $ was higher than the combined Ò of all committed characters. If the combined committed Ò score is equal to the $ score in the staging area, the players have not quested successfully or unsuccessfully: no progress tokens are placed, and the players do not increase their dials. (Rules Reference p. 23)">3.4 Quest resolution</div>
+                <div class="step action-window" data-detail="This step formalizes the end of the quest phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. (Rules Reference p. 23)">3.5 Quest phase ends</div>
+
+                <div class="phase-header">IV. TRAVEL PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the travel phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 23)">4.1 Travel phase begins</div>
+                <div class="step action-window" data-detail="The players (as a group) have the opportunity to travel to any one location in the staging area by removing it from the staging area and placing it alongside the current quest card. This causes the location to become the active location. The players can only travel to one location at a time. The first player makes the final decision on whether and where to travel. Players cannot travel to a new location if another location card is active; the players must explore the active location before traveling elsewhere. (Rules Reference p. 23)">4.2 Travel opportunity</div>
+                <div class="step" data-detail="This step formalizes the end of the travel phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. (Rules Reference p. 23)">4.3 Travel phase ends</div>
+
+                <div class="phase-header">V. ENCOUNTER PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the encounter phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 24)">5.1 Encounter phase begins</div>
+                <div class="step action-window" data-detail="Each player (in player order) has one option to engage one enemy in the staging area. This is done by moving the enemy from the staging area and placing it in front of the engaging player, in that player's play area. The enemy's engagement cost has no bearing on this procedure. (Rules Reference p. 24)">5.2 Optional engagement</div>
+                <div class="step action-window" data-detail="The players make a series of engagement checks, to determine if any of the enemies remaining in the staging area engage them. The first player compares their threat level against the engagement cost of each of the enemies in the staging area. The enemy with the highest engagement cost that is equal to or lower than this player's threat level engages the player and is moved from the staging area into the space in front of the player. This is known as making an engagement check. After the first player makes an engagement check, the next player (in player order) makes an engagement check. Once all players have made an engagement check, the first player makes second engagement check. Players continue making engagement checks in this manner until there are no enemies remaining in the staging area that can engage any of the players. (Rules Reference p. 24)">5.3 Engagement checks</div>
+                <div class="step" data-detail="This step formalizes the end of the encounter phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. (Rules Reference p. 24)">5.4 Encounter phase ends</div>
+
+                <div class="phase-header">VI. COMBAT PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the combat phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 24)">6.1 Combat phase begins</div>
+                <div class="step" data-detail="Deal one card from the encounter deck, facedown, to each engaged enemy. These cards are known as shadow cards. Deal shadow cards to each player's enemies in player order. When dealing to a single player's enemies, deal to the enemy with the highest engagement cost first, to the enemy with the next highest engagement cost second, and so forth, until each of that player's engaged enemies has been dealt a shadow card. If the encounter deck runs out of cards, any enemies that have not been dealt shadow cards are not dealt shadow cards this round. (Rules Reference p. 24)">6.2 Deal shadow cards</div>
+                <div class="step" data-detail="This step formalizes the beginning of the 'enemy attacks' process. In the steps that follow, each enemy that is engaged with a player will have one opportunity to make an attack. (Rules Reference p. 24)">6.3 'Resolve enemy attacks' process begins</div>
+                <div class="step" data-detail="The active player (starting with the first player) chooses an eligible enemy that they are engaged with to resolve its attack. An eligible enemy is one that has not yet attacked this round and is still able to attack. Use the 'Enemy Attack Resolution' flowchart to resolve an enemy's attack. If no eligible enemies remain for the active player to choose, proceed to 6.5. (Rules Reference p. 24)">6.4a Active player resolves next enemy attack</div>
+                <div class="step" data-detail="The next player (in player order) becomes the active player. Return to step 6.4a. If all players have resolved enemy attacks, proceed to 6.6. (Rules Reference p. 24)">6.5 Next player becomes active player</div>
+                <div class="step" data-detail="This step formalizes the end of the 'enemy attacks' process. (Rules Reference p. 24)">6.6 'Resolve Enemy Attacks' ends</div>
+                <div class="step" data-detail="This step formalizes the beginning of the 'player attacks' process. In the steps that follow, each player will have opportunities to declare attacks with their ready characters against enemies. (Rules Reference p. 24)">6.7 'Player Attacks' begin</div>
+                <div class="step" data-detail="The active player (starting with the first player) may declare an attack against one of their enemies. Use the 'Player Attack Resolution' flowchart to resolve a player's attack. If the active player is unable to or chooses not to declare an attack, proceed to 6.9. (Rules Reference p. 24)">6.8a Active player declares next attack</div>
+                <div class="step" data-detail="The next player (in player order) becomes the active player. Return to step 6.8a. If all players have resolved player attacks, proceed to 6.10. (Rules Reference p. 24)">6.9 Next player becomes active player</div>
+                <div class="step" data-detail="This step formalizes the end of the 'player attacks' process. (Rules Reference p. 24)">6.10 'Player Attacks' end</div>
+                <div class="step" data-detail="This step formalizes the end of the combat phase. Discard all shadow cards from all enemies at this time. (Rules Reference p. 25)">6.11 Combat phase ends</div>
+
+                <div class="phase-header">VII. REFRESH PHASE</div>
+                <div class="step" data-detail="This step formalizes the beginning of the refresh phase. The beginning of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 25)">7.1 Refresh phase begins</div>
+                <div class="step" data-detail="Simultaneously ready all exhausted cards. Cards enter play in a ready state, positioned so that their controller can read their text from left to right. If a player is instructed to ready an exhausted card, the card is returned to this ready state. (Rules Reference p. 25, 14)">7.2 Ready all cards</div>
+                <div class="step" data-detail="Each player simultaneously increases their threat by 1. Threat represents the level of risk a player has taken on during a scenario. The threat dial is used to track a player's threat level throughout the game. A player's threat cannot be reduced below 0. (Rules Reference p. 25, 17)">7.3 Raise threat</div>
+                <div class="step" data-detail="The first player passes the first player token to the next player (clockwise) to their left. That player becomes the new first player. The first player is determined by the players at the beginning of the game. The first player token is used to indicate which player is the first player. At the end of each refresh phase, this token passes to the next player (the player to the left of the current first player) and that player becomes the first player for the next round. (Rules Reference p. 25, 8)">7.4 Pass first player token</div>
+                <div class="step" data-detail="This step formalizes the end of the refresh phase. The end of a phase is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability expires or begins. (Rules Reference p. 25)">7.5 Refresh phase ends</div>
+
+                <div class="phase-header">0.1 Round ends</div>
+                <div class="step" data-detail="This step formalizes the end of a game round. Proceed to step 0.0 of the next game round. The end of a round is an important game milestone that may be referenced in card text, either as a point at which an ability may or must resolve, or as a point at which a lasting effect or constant ability begins or expires. (Rules Reference p. 25)">0.1 Round ends</div>
+            </div>
+            <div class="details" id="details">
+                <h2>Details</h2>
+                <p id="detailText">Select a step to view details</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="help">
+        <div class="container">
+            <div class="selector">
+                <div class="phase-header">HOW TO USE THIS TRACKER</div>
+                <div class="step" data-detail="This tracker helps you navigate through the complex turn structure of Lord of the Rings LCG. Use the navigation buttons (↑ Previous / ↓ Next) or arrow keys to move through steps. Click on any step to see detailed information. The tracker is organized into tabs: Turn Flow (complete round structure), Setup (game setup process), Combat Details (detailed attack resolution), and Help (this informational tab).">Navigation Guide</div>
+                
+                <div class="phase-header">COLOR CODING SYSTEM</div>
+                <div class="step" data-detail="The tracker uses color coding to help you quickly identify different types of game steps. Blue steps are automatic framework steps that happen without player input. Yellow steps are action windows where players can take actions, play cards, or make decisions. Green steps are detailed sub-steps that break down complex processes. Understanding these colors helps you know when you have opportunities to act versus when the game is just progressing automatically.">Color Coding Overview</div>
+                
+                <div class="step" data-detail="Blue steps represent automatic framework steps that happen without player decisions. These are mandatory game steps dictated by the structure of the game. Examples include: phase beginnings and endings, automatic resource gain, card drawing, readying cards, raising threat, and passing the first player token. These steps just happen - you don't need to make any decisions during them.">Blue Steps - Automatic Framework</div>
+                
+                <div class="step action-window" data-detail="Yellow steps indicate action windows where players can take actions, play cards, or make decisions. These are special moments when the game pauses to allow player input. Examples include: committing characters to quests, playing ally/attachment cards, choosing to travel, engaging enemies, declaring defenders, and responding to various game effects. These are your opportunities to be strategic and make decisions.">Yellow Steps - Action Windows</div>
+                
+                <div class="substep" data-detail="Green steps are detailed sub-steps that break down complex processes into smaller, more manageable pieces. They provide granular detail for complicated game mechanics. Examples include: the detailed steps of enemy attack resolution (6.4b through 6.4.4) and player attack resolution (6.8b through 6.8.4). These help you understand exactly what happens during complex combat sequences.">Green Steps - Detailed Sub-steps</div>
+                
+                <div class="phase-header">GAME MECHANICS GUIDE</div>
+                <div class="step" data-detail="Willpower strength (Ò) represents a character's contribution to questing. Attack strength (Û) represents damage dealt in combat. Defense strength (Ú) represents damage reduction. Threat strength ($) represents the difficulty of questing. These symbols appear throughout the game and are key to understanding combat and quest resolution.">Key Game Symbols</div>
+                
+                <div class="step" data-detail="Action windows are crucial moments when you can play cards or use abilities. They occur at specific points during the round and are marked with yellow highlighting. During action windows, the first player has priority, then opportunities proceed in player order. You can pass your opportunity, but if other players don't pass consecutively, you may get another chance to act.">Action Windows Explained</div>
+                
+                <div class="step" data-detail="The game uses specific timing rules for when abilities can be used. Response abilities can be used 'when' or 'after' specific events occur. Action abilities can only be used during action windows. Forced abilities happen automatically. Understanding these timing rules is crucial for effective gameplay and is reflected in the tracker's color coding system.">Timing Rules</div>
+            </div>
+            <div class="details">
+                <h2>Help Details</h2>
+                <p id="helpDetailText">Select a help topic to view details</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="setup">
+        <div class="container">
+            <div class="selector">
+                <div class="phase-header">GAME SETUP</div>
+                <div class="step" data-detail="Setup occurs before the game begins. Card effects triggered during Setup are fully resolved. In order to set up the game, follow these 7 steps. Each player must choose 1 to 3 hero cards. A player's deck must contain a minimum of 50 player cards. There is no upper limit on a player's deck size. A player's deck can only contain up to 3 copies (by title) of any given card. (Rules Reference p. 16, 6)">Setup Overview</div>
+                <div class="substep" data-detail="Shuffle all player decks and the encounter deck. Do not shuffle the quest deck. Each player's deck must contain a minimum of 50 player cards. There is no upper limit on a player's deck size. A player's deck can only contain up to 3 copies (by title) of any given card. (Rules Reference p. 16, 6)">1. Shuffle Decks</div>
+                <div class="substep" data-detail="Each player places their heroes in their play area, adds up the threat cost of the heroes they control, and sets their threat dial at the same value. This value is that player's initial threat level for the game. Each player chooses 1-3 hero cards and starts the game with them in play. (Rules Reference p. 16, 9)">2. Place Heroes and Set Initial Threat Levels</div>
+                <div class="substep" data-detail="Place the damage tokens, progress tokens, and resources tokens in a pile next to the encounter deck. All players take tokens from this bank as needed throughout the game. There is no limit to the number of resource, damage, or progress tokens which can be in the play area at a given time. (Rules Reference p. 16, 15)">3. Setup Token Bank</div>
+                <div class="substep" data-detail="The players determine a first player based on a majority group decision. If this proves impossible, determine a first player at random. Once determined, the first player takes the first player token and places it in front of them as reference. The first player has timing priority in the following situations: The first player has the first opportunity to initiate actions or act first in all standard action windows. The first player has the first opportunity to initiate responses at each appropriate game moment. (Rules Reference p. 16, 8)">4. Determine First Player</div>
+                <div class="substep" data-detail="Each player draws 6 cards from the top of their player deck. If a player does not wish to keep this starting hand, that player may take a single mulligan. After a player draws their starting hand during setup, that player has the option to declare a mulligan. After doing so, the player reshuffles the starting hand into their deck and draws a new starting hand. The player must keep this second hand. (Rules Reference p. 16, 11)">5. Draw Setup Hand</div>
+                <div class="substep" data-detail="Arrange the quest cards in sequential order, based off the numbers on the back of each card. Stage 1A should be on top, with the numbers increasing in sequence moving down the stack. Place the quest deck near the encounter deck, in the center of the play area. Each quest card represents one of the various stages of the quest the players are pursuing in a scenario. Each quest card is a numbered step in a fixed, sequential order, arranged in a stack called 'the quest deck.' (Rules Reference p. 16, 13)">6. Set Quest Cards</div>
+                <div class="substep" data-detail="The back of the first quest card typically provides setup instructions for a scenario. Follow these instructions before flipping the quest card. After completing these steps, players begin the game starting with the first game round. (Rules Reference p. 16)">7. Follow Scenario Setup Instructions</div>
+            </div>
+            <div class="details">
+                <h2>Setup Details</h2>
+                <p id="setupDetailText">Select a setup step to view details</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="combat">
+        <div class="container">
+            <div class="selector">
+                <div class="phase-header">COMBAT RESOLUTION</div>
+                <div class="step" data-detail="The steps of this phase and how to resolve attacks are described in timing entries 6.1–6.11. Combat damage is determined by subtracting the defense strength (Ú) of the defending character from the attack strength (Û) of the attacking enemy. The remaining value is the amount of damage that must immediately be dealt to the defending character. If the Ú is equal to or higher than the Û, no damage is dealt. Each character and enemy has an attack strength. This value is the amount of damage that character or enemy deals when it attacks. Attack strength is denoted by the Û symbol. Each character and enemy has a defense strength. This value is the amount of damage a character reduces an attack by when it defends, or the amount of damage an enemy reduces an attack by when that enemy is attacked. Defense strength is denoted by the Ú symbol. (Rules Reference p. 5, 24-25, 4, 6)">Combat Phase Overview</div>
+                
+                <div class="phase-header">ENEMY ATTACK RESOLUTION</div>
+                <div class="substep" data-detail="The active player chooses which attack (among the enemies to they are engaged that has not yet attacked this round) to resolve. An eligible enemy is one that has not yet attacked this round and is still able to attack. The active player (starting with the first player) chooses an eligible enemy that they are engaged with to resolve its attack. If no eligible enemies remain for the active player to choose, proceed to the next player. (Rules Reference p. 25)">6.4b Enemy attack initiates</div>
+                <div class="substep action-window" data-detail="The active player may choose one ready character they control to declare as a defender for this attack. A character must exhaust to be declared as a defender. The active player may instead decide to let the attack go undefended by declaring no defenders for that attack. Unless a card ability specifies otherwise, a player can only declare defenders against enemies with whom they are engaged. (Rules Reference p. 25)">6.4.1 Declare defender</div>
+                <div class="substep action-window" data-detail="The active player flips the attacking enemy's shadow card faceup and resolves any shadow effect the card might have. Some encounter cards have a secondary effect known as a shadow effect. These effects are offset from a card's non-shadow text by the 'shadow bar' graphic. They are also denoted by the bold italic 'Shadow:' trigger on the card. Shadow effects only resolve when dealt as a shadow card during an enemy attack. (Rules Reference p. 25, 16)">6.4.2 Reveal and resolve shadow effect</div>
+                <div class="substep action-window" data-detail="Combat damage is determined by subtracting the defense strength (Ú) of the defending character from the attack strength (Û) of the attacking enemy. The remaining value is the amount of damage that must immediately be dealt to the defending character. If the Ú is equal to or higher than the Û, no damage is dealt. If an attack is undefended, all damage from the attack must be assigned to a single hero controlled by the active player. If a defending character leaves play or is removed from combat before damage is assigned, the attack is considered undefended. A character's Ú does not absorb damage from undefended attacks. If a character is destroyed by an attack, additional damage from the attack is not dealt to other characters. Damage tokens can be placed on character cards and enemies by attacks and by various abilities. If a character or enemy has as much (or more) damage on it as it has hit points, it is destroyed. (Rules Reference p. 25, 5)">6.4.3 Determine combat damage</div>
+                <div class="substep" data-detail="This step formalizes the end of the enemy's attack. Return to step 6.4a in the main flowchart. (Rules Reference p. 25)">6.4.4 Enemy attack ends</div>
+
+                <div class="phase-header">PLAYER ATTACK RESOLUTION</div>
+                <div class="substep" data-detail="The active player chooses 1 enemy with whom they are currently engaged, and exhausts any number of characters they control to declare them as attackers against that enemy. If each of the attacking characters declared during this step has ranged, the attack may be declared against any enemy that is engaged with any player. The active player (starting with the first player) may declare an attack against one of their enemies. Use the 'Player Attack Resolution' flowchart to resolve a player's attack. If the active player is unable to or chooses not to declare an attack, proceed to the next player. (Rules Reference p. 26)">6.8b Player attack initiates</div>
+                <div class="substep action-window" data-detail="Any number of ranged characters controlled by other players may exhaust to be declared as attackers. Ranged is a keyword ability. A character with the ranged keyword can be declared by its controller as an attacker against enemies that are engaged with another player. A character can declare ranged attacks against these targets while its owner is declaring attacks, or it can participate in attacks that are declared by other players. In either case, the character must exhaust and meet any other requirements necessary to make the attack. (Rules Reference p. 26, 14)">6.8.1 Ranged option</div>
+                <div class="substep action-window" data-detail="Add up the total Û of all characters that are currently attacking. Each character and enemy has an attack strength. This value is the amount of damage that character or enemy deals when it attacks. Attack strength is denoted by the Û symbol. (Rules Reference p. 26, 4)">6.8.2 Determine attack strength</div>
+                <div class="substep action-window" data-detail="This is done by subtracting the target enemy's Ú from the combined Û of all the attacking characters. The remaining value is the amount of damage that is immediately dealt to the target enemy being attacked. If the Ú is equal to or higher than the Û, no damage is dealt. When a hero or ally is destroyed, it is placed faceup on top of its owner's discard pile. When an enemy is destroyed, it is placed faceup on top of the encounter discard pile. Placing a hero, ally, or enemy in the discard pile as the result of being destroyed is not the same as 'discarding' that card. (Rules Reference p. 26, 6)">6.8.3 Determine combat damage</div>
+                <div class="substep" data-detail="This step formalizes the end of the attack. Characters that were declared as attackers are only considered to be attacking through the resolution of this step (and all reactions to it). Return to step 6.8a in the main flowchart. (Rules Reference p. 26)">6.8.4 Player attack ends</div>
+            </div>
+            <div class="details">
+                <h2>Combat Details</h2>
+                <p id="combatDetailText">Select a combat step to view details</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedIndex = 0;
+        let currentTab = 'turn-flow';
+        const steps = document.querySelectorAll('.step, .substep');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function updateSelection() {
+            // Remove selection from all steps across all tabs
+            document.querySelectorAll('.step, .substep').forEach(step => {
+                step.classList.remove('selected');
+            });
+
+            // Get steps from current tab only
+            const currentSteps = document.querySelectorAll(`#${currentTab} .step, #${currentTab} .substep`);
+            
+            if (currentSteps.length > 0 && selectedIndex < currentSteps.length) {
+                const selectedStep = currentSteps[selectedIndex];
+                selectedStep.classList.add('selected');
+                selectedStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Update detail text
+                const detailText = selectedStep.getAttribute('data-detail');
+                let detailElement;
+                
+                // Find the correct detail element based on current tab
+                if (currentTab === 'help') {
+                    detailElement = document.getElementById('helpDetailText');
+                } else if (currentTab === 'turn-flow') {
+                    detailElement = document.getElementById('detailText');
+                } else if (currentTab === 'setup') {
+                    detailElement = document.getElementById('setupDetailText');
+                } else if (currentTab === 'combat') {
+                    detailElement = document.getElementById('combatDetailText');
+                }
+                
+                if (detailElement && detailText) {
+                    detailElement.innerHTML = formatDetailText(detailText);
+                }
+            }
+        }
+
+        function formatDetailText(text) {
+            // Extract page reference
+            const pageMatch = text.match(/\(([^)]*p\.\s*[^)]+)\)/);
+            const pageRef = pageMatch ? 
+                `<span class="page-ref">${pageMatch[1]}</span>` : '';
+            const cleanText = text.replace(/\([^)]*p\.\s*[^)]+\)/, '').trim();
+
+            // Check for explicit bullet points first
+            if (cleanText.includes('•')) {
+                const parts = cleanText.split('•').filter(part => part.trim());
+                const introText = parts[0].trim();
+                const bulletItems = parts.slice(1);
+                
+                const formattedIntro = applyFormatting(introText);
+                const bulletPoints = bulletItems.map(item => 
+                    `<li>${applyFormatting(item.trim())}</li>`
+                ).join('');
+                
+                return `<p>${formattedIntro}</p><ul>${bulletPoints}</ul>${pageRef}`;
+            }
+
+            // Split into sentences and create bullet points if multiple sentences
+            const sentences = cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/);
+
+            if (sentences.length <= 2) {
+                return `<p>${applyFormatting(cleanText)}</p>${pageRef}`;
+            }
+
+            const bulletPoints = sentences.map(sentence => 
+                `<li>${applyFormatting(sentence.trim())}</li>`
+            ).join('');
+
+            return `<ul>${bulletPoints}</ul>${pageRef}`;
+        }
+
+        function applyFormatting(text) {
+            // Game-specific terms (italics)
+            text = text.replace(/\b(quest|phase|round|step|action|response|forced|when revealed)\b/g, '<em>$1</em>');
+            text = text.replace(/\b(hero|ally|attachment|event|enemy|location|treachery|objective)\b/g, '<em>$1</em>');
+            text = text.replace(/\b(staging area|play area|discard pile|victory display|encounter deck|quest deck)\b/g, '<em>$1</em>');
+            text = text.replace(/\b(willpower strength|attack strength|defense strength|threat strength|quest points)\b/g, '<em>$1</em>');
+            text = text.replace(/\b(Ò|Û|Ú|\$)\b/g, '<em>$1</em>');
+
+            // Important mechanics (bold)
+            text = text.replace(/\b(must|may|cannot|immediately|before|after|when|then)\b/gi, '<strong>$1</strong>');
+            text = text.replace(/\b(exhaust|ready|commit|engage|travel|explore)\b/gi, '<strong>$1</strong>');
+            text = text.replace(/\b(active player|first player|defending player)\b/gi, '<strong>$1</strong>');
+
+            // Numbers and quantities (bold)
+            text = text.replace(/\b(\d+\s*damage|\d+\s*cards?|\d+\s*tokens?|\d+\s*threat)\b/g, '<strong>$1</strong>');
+
+            return text;
+        }
+
+        function navigate(direction) {
+            const currentSteps = document.querySelectorAll(`#${currentTab} .step, #${currentTab} .substep`);
+            if (currentSteps.length > 0) {
+                selectedIndex = (selectedIndex + direction + currentSteps.length) % currentSteps.length;
+                updateSelection();
+            }
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            selectedIndex = 0;
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            // Reset selection and update display
+            updateSelection();
+            
+            // If no steps are selected, select the first one
+            const currentSteps = document.querySelectorAll(`#${currentTab} .step, #${currentTab} .substep`);
+            if (currentSteps.length > 0) {
+                selectedIndex = 0;
+                updateSelection();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('upButton').addEventListener('click', () => navigate(-1));
+        document.getElementById('downButton').addEventListener('click', () => navigate(1));
+
+        // Add click listeners to all steps across all tabs
+        document.querySelectorAll('.step, .substep').forEach((step, index) => {
+            step.addEventListener('click', () => {
+                // Find the index within the current tab
+                const currentSteps = document.querySelectorAll(`#${currentTab} .step, #${currentTab} .substep`);
+                const stepIndex = Array.from(currentSteps).indexOf(step);
+                if (stepIndex !== -1) {
+                    selectedIndex = stepIndex;
+                    updateSelection();
+                }
+            });
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.getAttribute('data-tab'));
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') {
+                navigate(-1);
+            } else if (event.key === 'ArrowDown') {
+                navigate(1);
+            }
+        });
+
+        // Initialize
+        updateSelection();
+        
+        // Ensure first step is selected on startup
+        const initialSteps = document.querySelectorAll('#turn-flow .step, #turn-flow .substep');
+        if (initialSteps.length > 0) {
+            selectedIndex = 0;
+            updateSelection();
+        }
+    </script>
+</body>
+</html> 
