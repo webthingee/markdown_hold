@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wondrous Creatures - Solo Mode Turn Order</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .navigation {
+      display: flex;
+      justify-content: center;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    .navigation button {
+      margin: 0 8px;
+      padding: 8px 16px;
+      font-size: 1.2rem;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .navigation button:hover {
+      background: #357abd;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background: #e0e0e0;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      border-radius: 5px 5px 0 0;
+      margin: 0 2px;
+    }
+    .tab.active {
+      background: #4a90e2;
+      color: white;
+    }
+    .tab:hover:not(.active) {
+      background: #d0d0d0;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 840px;
+      height: 360px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .selector {
+      width: 50%;
+      overflow-y: auto;
+      padding: 15px;
+      border-right: 1px solid #ccc;
+      font-size: 0.85rem;
+    }
+    .details {
+      width: 50%;
+      padding: 15px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .details h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: #4a90e2;
+      border-bottom: 2px solid #4a90e2;
+      padding-bottom: 5px;
+    }
+    .details p {
+      margin: 0;
+      line-height: 1.6;
+    }
+    .details ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .details li {
+      margin: 5px 0;
+      line-height: 1.5;
+    }
+    .details strong {
+      color: #2c5aa0;
+      font-weight: 600;
+    }
+    .details em {
+      background-color: #f0f7ff;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-style: normal;
+      color: #1a365d;
+    }
+    .page-ref {
+      color: #666;
+      font-size: 0.8em;
+      font-weight: bold;
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+    .step {
+      font-size: 1rem;
+      margin: 8px 0;
+      padding: 8px 15px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .substep {
+      font-size: 0.8rem;
+      margin: 4px 0 0 15px;
+      padding: 6px 12px;
+      background: #f8f8f8;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .selected {
+      background-color: #4a90e2;
+      color: white;
+      font-weight: bold;
+    }
+    .player-turn {
+      border-left: 4px solid #2196F3;
+    }
+    .tingent-turn {
+      border-left: 4px solid #FF6B6B;
+    }
+    
+    /* iPhone landscape optimization */
+    @media screen and (max-width: 926px) and (orientation: landscape) {
+      .container {
+        height: calc(100vh - 120px);
+        max-height: 320px;
+      }
+      .step {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        margin: 6px 0;
+      }
+      .substep {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        margin: 3px 0 0 12px;
+      }
+      .details h2 {
+        font-size: 1rem;
+      }
+      .tab {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navigation">
+    <button id="upButton">↑</button>
+    <button id="downButton">↓</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="turn-flow">Turn Flow</button>
+    <button class="tab" data-tab="setup">Solo Setup</button>
+    <button class="tab" data-tab="scoring">Solo Scoring</button>
+  </div>
+  <div class="tab-content active" id="turn-flow">
+    <div class="container">
+      <div class="selector" id="list">
+        <div class="step selected player-turn" data-detail="You and Tingent alternate turns until the game ends. You always go first as the First Player. Each player follows their own turn structure: you perform Basic Actions and Free Actions, while Tingent follows its automated card-driven actions. The game ends when all Trophies are depleted. (Rulebook p. 22-23)">1. Solo Game Turn Overview</div>
+        
+        <div class="step player-turn" data-detail="Your turn works exactly like the multiplayer game. Choose 1 Basic Action (Place Crew Member, Play Cards, Complete Achievement, or Recharge) and perform any number of Free Actions (Use Butterfly Net, Use Energy). You follow all normal rules for resource management, card costs, and abilities. (Rulebook p. 17)">2. Your Turn (Player)</div>
+        <div class="substep player-turn" data-detail="Choose exactly one of the four Basic Actions available to you on your turn. You must perform exactly one Basic Action - you cannot pass your turn. • Place a Crew Member: deploy a worker on the map to gather resources or cards from adjacent Habitats. • Play a Card(s): play up to 2 cards from your hand by paying their resource costs. • Complete an Achievement: claim an available achievement slot for immediate rewards and end-game points. • Recharge: return all 3 crew members to your board when they're all deployed on the map. (Rulebook p. 17)">2.1 Choose 1 Basic Action</div>
+        <div class="substep player-turn" data-detail="Perform as many Free Actions as desired at any time during your turn. Free Actions can be used before, during, or after your Basic Action. • Use a Butterfly Net: collect an adjacent Egg or activate an adjacent Special Effect Icon. • Use an Energy: discard an Energy from a card to activate that card's ability. (Rulebook p. 17-19)">2.2 Perform Free Actions (Optional)</div>
+        <div class="substep player-turn" data-detail="At the end of your turn, refill any empty spaces in the Wilderness by drawing from the deck. If you depleted the last Trophy, each remaining player (including Tingent) takes one final turn, then the game ends. Otherwise, Tingent takes its turn next. (Rulebook p. 20)">2.3 End Turn / Check Game End</div>
+
+        <div class="step tingent-turn" data-detail="Tingent's turn is automated and follows a specific sequence. Tingent does not use resources, energies, or butterfly nets. It only places 2 Crew members (never removes them), collects cards and eggs based on Achievement targets, and never pays costs or activates abilities. All actions are driven by Tingent Cards. (Rulebook p. 22-23)">3. Tingent's Turn (AI)</div>
+        <div class="substep tingent-turn" data-detail="Draw the top card from the Tingent Card deck and place it face-up on top of any previously drawn cards. If the deck runs out, shuffle all Tingent Cards to create a new deck. This card determines all of Tingent's actions for this turn. (Rulebook p. 23)">3.1 Draw Tingent Card</div>
+        <div class="substep tingent-turn" data-detail="Look at the Tingent Tracker position on the Tingent Board. If it's on a Yellow Gear space, activate the Yellow Area of the card. If it's on a Brown Gear space, activate the Brown Area. The card shows different actions (place crew, take cards, gain eggs) based on which area is active. (Rulebook p. 23)">3.2 Activate Card Based on Tracker Position</div>
+        <div class="substep tingent-turn" data-detail="If the Tingent Card shows a Red Gear icon in the center, advance the Tingent Tracker one space on the Tingent Board. When the tracker reaches the first Brown Gear space, flip all Tingent Cards to their brown side - future turns will use Brown Areas instead of Yellow Areas. (Rulebook p. 23)">3.3 Advance Tingent Tracker (if Red Gear present)</div>
+        <div class="substep tingent-turn" data-detail="If the Tingent Tracker advanced to a space with an icon, immediately resolve its effect. Some effects help Tingent score points. • Discovery: place Habitat Tile on leftmost Lake hex with an Egg, Tingent gains that Egg. • Time Track Advance: advance Time Track by 1 space and apply any Time Track effects. • Complete Achievement: place Achievement Marker on targeted Achievement and take Trophy. (Rulebook p. 25)">3.4 Resolve Tracker Icon Effect (if present)</div>
+
+        <div class="step tingent-turn" data-detail="Tingent places its Captain or regular Crew member on the Map based on the activated card area. It seeks to maximize adjacent Habitats matching the card's requirements, gains VPs for matching adjacent Habitats, and collects any Eggs on placement hexes. Tingent cannot place on Mountains and never removes Crew from the Map. (Rulebook p. 24)">4. Tingent Crew Placement Actions</div>
+        <div class="substep tingent-turn" data-detail="If the card shows a Captain icon, place Tingent's Captain on the Map where it can be adjacent to the most Habitats of the type shown on the card. Tingent immediately gains 1 VP for each adjacent Habitat that matches the card requirement (not all adjacent Habitats). (Rulebook p. 24)">4.1 Captain Placement (if Captain icon)</div>
+        <div class="substep tingent-turn" data-detail="If the card shows a regular Crew icon, place Tingent's regular Crew member where it can be adjacent to the most Habitats of the type shown. Use tiebreaker rules if multiple locations are equal. • Step 1: Place where adjacent to most other Habitats beyond the required type. • Step 2: If still tied, place where adjacent to most Special Effect Icons. • Step 3: If still tied, place where adjacent to most Eggs. • Step 4: If still tied, you choose for Tingent. (Rulebook p. 24)">4.2 Regular Crew Placement (if Crew icon)</div>
+        <div class="substep tingent-turn" data-detail="If there's an Egg on the hex where Tingent places its Crew member, Tingent collects that Egg and places it in the Tingent Area. Tingent does not gain Egg Storage Rewards and can hold unlimited Eggs. If no valid placement exists, draw a new Tingent Card. (Rulebook p. 24)">4.3 Collect Egg on Placement Hex (if present)</div>
+
+        <div class="step tingent-turn" data-detail="Tingent collects Creature Cards and Eggs based on its Achievement targets and card requirements. It takes specific cards from the Wilderness (face-up) or draws from the deck (face-down), and gains matching Eggs from the Supply. Face-up cards count toward species Achievements while face-down provide end-game points. (Rulebook p. 24)">5. Tingent Card and Egg Collection</div>
+        <div class="substep tingent-turn" data-detail="If the card shows this icon, draw 1 card from the Creature Card deck and place it face-down in the Tingent Area. Face-down cards don't help with Achievements but provide VPs at game end based on Tingent's difficulty level (1-3 VPs per card). (Rulebook p. 24)">5.1 Draw Face-Down Card (if Draw icon)</div>
+        <div class="substep tingent-turn" data-detail="If the card shows this icon, take a card from the Wilderness that matches the species icon of the Achievement with the corresponding Target Token color. Choose the card with highest Ending Score, or leftmost if tied. If no matching cards exist, draw face-down instead. (Rulebook p. 24)">5.2 Take Face-Up Card from Wilderness (if Take icon)</div>
+        <div class="substep tingent-turn" data-detail="If the card shows this icon and Tingent just took a face-up card, take an Egg from the Supply matching one of the species icons on the card Tingent just acquired. If the card has 2 species icons, use the one that matches the Target Token Achievement. Place the Egg in Tingent Area. (Rulebook p. 24)">5.3 Gain Matching Egg (if Egg icon)</div>
+
+        <div class="step tingent-turn" data-detail="When Tingent's Tracker lands on certain spaces, it can automatically complete Achievements following special rules. Tingent doesn't pay costs, doesn't hatch Eggs, and can complete lower slots unconditionally unless you block them. It needs sufficient face-up species icons for upper slots. (Rulebook p. 25)">6. Tingent Achievement Completion</div>
+        <div class="substep tingent-turn" data-detail="When triggered by Tracker icon, Tingent places an Achievement Marker on the Main Achievement where its Brown Target Token is located. It chooses upper slot if available, otherwise lower slot. Take a Trophy for Tingent and move the Brown Target Token to the next Main Achievement (or leave if none remain). (Rulebook p. 25)">6.1 Complete Main Achievement</div>
+        <div class="substep tingent-turn" data-detail="When triggered by Tracker icon, Tingent attempts to complete the Single-Species or Multi-Species Achievement with the matching Target Token color. It can always take lower slots unless you occupy them. For upper slots, it needs enough face-up cards and Eggs with matching species icons. (Rulebook p. 25)">6.2 Complete Species Achievement</div>
+        <div class="substep tingent-turn" data-detail="Tingent follows special Achievement placement rules based on available slots and species count. Count species icons from face-up cards and all Eggs in Tingent's area. • If Tingent has enough icons for upper slot and it's available: place marker in upper slot. • If upper slot occupied by you but lower slot available: Tingent takes lower slot. • If you occupy lower slot and Tingent can't reach upper requirement: Tingent forfeits this Achievement entirely. • Tingent never hatches Eggs when completing Achievements. (Rulebook p. 25)">6.3 Apply Achievement Placement Rules</div>
+        <div class="substep tingent-turn" data-detail="When Tingent completes any Achievement, it takes a Trophy from the Main Board and places it in the Tingent Area. Move the corresponding Target Token to the next Achievement Card of the same type. If no more cards of that type exist, the Target Token stays in place. (Rulebook p. 25)">6.4 Take Trophy and Move Target Token</div>
+
+        <div class="step" data-detail="After both you and Tingent have taken your turns, check if all Trophies have been depleted from the Main Board. If so, finish any remaining final turns and proceed to scoring. If not, continue with the next round starting with your turn. Refill the Wilderness if needed before continuing. (Rulebook p. 25)">7. Round End and Game Continuation</div>
+        <div class="substep" data-detail="Check if any player (you or Tingent) took the last Trophy during their turn. If you took it, Tingent gets one final turn then game ends. If Tingent took it, the game ends immediately. If Trophies remain, continue to the next round with your turn. (Rulebook p. 25)">7.1 Check for Game End Trigger</div>
+        <div class="substep" data-detail="If the game continues, make sure the Wilderness has 6 cards by drawing from the deck to fill any empty spaces. If the deck runs out, shuffle the discard pile. Then begin the next round with your turn, following the same alternating sequence. (Rulebook p. 11)">7.2 Refill Wilderness and Continue</div>
+      </div>
+      <div class="details" id="details">
+        <h2>Details</h2>
+        <p id="detailText">You and Tingent alternate turns until the game ends. You always go first as the First Player. Each player follows their own turn structure: you perform Basic Actions and Free Actions, while Tingent follows its automated card-driven actions. The game ends when all Trophies are depleted. (Rulebook p. 22-23)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="setup">
+    <div class="container">
+      <div class="selector" id="setup-list">
+        <div class="step selected" data-detail="Solo mode setup is similar to a 2-player game but with important differences for Tingent (the AI opponent). Tingent doesn't use normal player components and follows special setup rules. You'll choose your difficulty level and set up Target Tokens to guide Tingent's behavior throughout the game. (Rulebook p. 22)">1. Solo Mode Setup Overview</div>
+        <div class="substep" data-detail="Use the 2-player side of the Main Board (Side-A). Place the Supply Board above it. Set up Creature Cards with 6 in the Wilderness, place Eggs/Energies/Nets in Supply, and place 35 Eggs (5 per species) in the Egg Pouch. Follow normal board setup procedures. (Rulebook p. 22)">1.1 Basic Board Setup (as 2-player)</div>
+        <div class="substep" data-detail="Place only 8 Trophies on the Main Board instead of the normal 10 for 2-player games. This creates a shorter, more focused solo experience. Place Score Tokens near the Score Track as normal for when you exceed 50 VPs during the game. (Rulebook p. 22)">1.2 Place 8 Trophies (not 10)</div>
+        <div class="substep" data-detail="Set up Habitat Tiles, Time Track, and initial Eggs on Map following normal 2-player rules. Skip the 4-player components. Shuffle Time Tokens, reveal 2, and place Eggs on corresponding marked hexes. Place remaining Time Tokens face-down on yellow Time Track spaces. (Rulebook p. 22)">1.3 Complete Standard Map Setup</div>
+        <div class="substep" data-detail="Set up 7 Achievement Cards as normal: 3 Main (brown), 2 Multi-Species (yellow), 2 Single-Species (turquoise). Ensure no species overlap between Multi-Species and Single-Species cards. These will be targeted by Tingent's special Target Tokens during the game. (Rulebook p. 22)">1.4 Set Up Achievement Cards</div>
+
+        <div class="substep" data-detail="Choose any Captain Board from all available options - you have full choice since Tingent doesn't use Captain Boards. Take your normal player components: Player Board, 3 Crew Members (1 magnetic Captain + 2 regular), 6 Achievement Markers, 4 Resource Trackers, Score Tracker, and 1 Butterfly Net. (Rulebook p. 22)">1.5 Your Player Setup</div>
+        <div class="substep" data-detail="Draw 8 Creature Cards, choose 4 to keep in hand, discard 4 face-up. Place Resource Trackers on space 1 of each track, Score Tracker on boat icon, Lock Token on Captain Board. Since you're First Player, you start with 1 of each resource (no bonus resources). (Rulebook p. 22)">1.6 Your Starting Hand and Resources</div>
+
+        <div class="substep" data-detail="Choose a color for Tingent to represent the AI opponent. Take 2 Crew members (1 magnetic, 1 regular) in that color and place them next to the chosen Tingent Board. Tingent does not get a Player Board, Captain Board, Butterfly Nets, Lock Tokens, or resources. (Rulebook p. 22)">1.7 Choose Tingent Color and Components</div>
+        <div class="substep" data-detail="Select your desired difficulty level for the AI opponent. Higher difficulties give Tingent more VPs for face-down cards collected. • Lazy Tingent: easiest difficulty, 1 VP per face-down card. • Easygoing Tingent: medium difficulty, 2 VPs per face-down card. • Wild Tingent: hard difficulty, 3 VPs per face-down card. • Terrifying Tingent: hardest difficulty, 3 VPs per face-down card. Take the corresponding Tingent Board (found on the back of Captain Boards) and place it near the play area. (Rulebook p. 22)">1.8 Choose Tingent Difficulty Level</div>
+        <div class="substep" data-detail="Set up Tingent's tracking components in the chosen color. • Take 6 Achievement Markers and place them next to the Tingent Board for future Achievement completion. • Take 1 Resource Tracker and place it on the first space of the Tingent Board - this becomes the Tingent Tracker. • Take 1 Score Tracker for Tingent and place it on the boat icon near the Score Track. (Rulebook p. 22)">1.9 Set Up Tingent Trackers and Markers</div>
+        <div class="substep" data-detail="Shuffle all Tingent Cards and place them face-down next to the Tingent Board as a deck. These cards will drive all of Tingent's actions throughout the game. Combine the magnetic Crew member with the Tingent meeple to create Tingent's Captain. (Rulebook p. 22)">1.10 Prepare Tingent Cards and Captain</div>
+
+        <div class="substep" data-detail="Place the Turquoise Target Token on the leftmost Single-Species Achievement Card. This token will guide Tingent toward collecting creatures of this species. The token moves to other Single-Species cards as Tingent completes Achievements during the game. (Rulebook p. 22)">1.11 Place Turquoise Target Token</div>
+        <div class="substep" data-detail="Place the Yellow Target Token on the leftmost Multi-Species Achievement Card. This token helps Tingent target the two species shown on this card. The token will move to the other Multi-Species card when Tingent completes its first Multi-Species Achievement. (Rulebook p. 22)">1.12 Place Yellow Target Token</div>
+        <div class="substep" data-detail="Place the Brown Target Token on the leftmost Main Achievement Card. This guides Tingent toward completing Main Achievements in order from left to right. The token moves rightward as Tingent completes each Main Achievement during the game. (Rulebook p. 22)">1.13 Place Brown Target Token</div>
+        <div class="substep" data-detail="Setup is complete! You are the First Player and begin the game. You and Tingent will alternate turns, with you always going first each round. Your goal is to score more VPs than Tingent by game end. The game ends when all 8 Trophies are depleted. (Rulebook p. 22)">1.14 Begin Solo Game</div>
+      </div>
+      <div class="details" id="setup-details">
+        <h2>Details</h2>
+        <p id="setup-detailText">Solo mode setup is similar to a 2-player game but with important differences for Tingent (the AI opponent). Tingent doesn't use normal player components and follows special setup rules. You'll choose your difficulty level and set up Target Tokens to guide Tingent's behavior throughout the game. (Rulebook p. 22)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="scoring">
+    <div class="container">
+      <div class="selector" id="scoring-list">
+        <div class="step selected" data-detail="At game end, calculate your score using normal rules, then calculate Tingent's score using modified rules. Tingent scores differently than normal players - it gets points for face-up cards, Achievements, Trophies, and Eggs, plus bonus points for face-down cards based on difficulty level. Compare final scores to determine the winner. (Rulebook p. 25)">1. Solo Game Scoring Overview</div>
+        
+        <div class="step" data-detail="Calculate your final score exactly as in multiplayer games. Add End Card scores, all card Ending Scores, Achievement Slot scores, 3 VPs per Trophy, and 1 VP per 4 resources/Butterfly Nets. Use Score Tokens if you exceed 50 VPs. This is your final score to compare against Tingent. (Rulebook p. 20-21)">2. Your Score Calculation (Normal Rules)</div>
+        <div class="substep" data-detail="Activate all End Cards in your reserve and gain their VPs based on your collection. For example, if you have an End Card giving 1 VP per Crustacean and you have 8 Crustaceans total, gain 8 VPs. Add all End Card scores together. (Rulebook p. 20)">2.1 End Card Scores</div>
+        <div class="substep" data-detail="Add the Ending Score (red seal number) from every Creature Card in your reserve. These are the base victory points printed on each card that you played during the game. Do not count abilities here, just the printed numbers. (Rulebook p. 20)">2.2 Creature Card Ending Scores</div>
+        <div class="substep" data-detail="Add the Ending Score from each Achievement Slot you completed during the game. Each Achievement shows different VP values for upper and lower slots. Count the specific slot you claimed, not the total Achievement card value. (Rulebook p. 20)">2.3 Achievement Slot Scores</div>
+        <div class="substep" data-detail="Count all Trophies you collected and multiply by 3 VPs each. Trophies are primarily gained from completing Achievements, but can also come from reaching 30 and 50 VPs on the Score Track during the game. (Rulebook p. 20)">2.4 Trophy Scores (3 VPs each)</div>
+        <div class="substep" data-detail="Count your remaining resources (Fruits, Corals, Flowers, Mushrooms) and Butterfly Nets. Gain 1 VP for every 4 total items. For example, if you have 6 resources and 2 Nets (8 total), gain 2 VPs. Always round down. (Rulebook p. 20)">2.5 Resources and Nets (1 VP per 4)</div>
+
+        <div class="step" data-detail="Tingent's scoring follows different rules than normal players. It gains points from face-up cards, Achievements, Trophies, and Eggs, but gets special bonuses for face-down cards based on difficulty level. Tingent never activates End Card abilities - face-up End Cards simply give 5 VPs each instead. (Rulebook p. 25)">3. Tingent's Score Calculation (Special Rules)</div>
+        <div class="substep" data-detail="Tingent does not activate End Card abilities like normal players. Instead, each face-up End Card in Tingent's area provides exactly 5 VPs regardless of its normal effect. This simplifies Tingent's scoring while still giving value to End Cards. (Rulebook p. 25)">3.1 Face-Up End Cards (5 VPs each)</div>
+        <div class="substep" data-detail="Add the Ending Score (red seal number) from every face-up Creature Card in Tingent's area. These are cards Tingent took from the Wilderness during the game based on its Target Token objectives. Count only the printed Ending Scores, not abilities. (Rulebook p. 25)">3.2 Face-Up Card Ending Scores</div>
+        <div class="substep" data-detail="Add the Ending Score from each Achievement Slot that Tingent completed during the game. Tingent follows the same Achievement scoring as normal players - count the VPs from the specific slots (upper or lower) that Tingent claimed. (Rulebook p. 25)">3.3 Achievement Slot Scores</div>
+        <div class="substep" data-detail="Count all Trophies in Tingent's area and multiply by 3 VPs each. Tingent gains Trophies primarily from completing Achievements through its automated Tracker advancement system. Each Trophy is worth the same 3 VPs as for normal players. (Rulebook p. 25)">3.4 Trophy Scores (3 VPs each)</div>
+        <div class="substep" data-detail="Count all Eggs in Tingent's area (both face-up cards earned and Eggs gained from Supply) and gain 1 VP per Egg. Unlike normal players, Tingent scores 1 VP per Egg rather than using them for Achievement requirements only. (Rulebook p. 25)">3.5 Egg Scores (1 VP each)</div>
+        <div class="substep" data-detail="Count all face-down cards in Tingent's area and gain VPs based on the difficulty level you chose during setup. Higher difficulties make Tingent score more points for these cards. • Lazy Tingent: 1 VP per face-down card. • Easygoing Tingent: 2 VPs per face-down card. • Wild Tingent: 3 VPs per face-down card. • Terrifying Tingent: 3 VPs per face-down card. (Rulebook p. 25)">3.6 Face-Down Card Bonus (by Difficulty)</div>
+
+        <div class="step" data-detail="Compare your final score with Tingent's final score. The higher score wins the game. If tied, the side with more Trophies wins. If still tied, Tingent wins (giving the AI the benefit in ties). Record your result and consider increasing Tingent's difficulty for future games if you won easily. (Rulebook p. 25)">4. Determine Winner</div>
+        <div class="substep" data-detail="Add up all scoring categories for both you and Tingent. The player with the higher total score wins the solo game. If you win, you've successfully explored the mysterious island better than the Society of the Western Kingdoms' agent! (Rulebook p. 25)">4.1 Compare Final Scores</div>
+        <div class="substep" data-detail="If both players have exactly the same score, count Trophies as the first tiebreaker. The player with more Trophies wins. This represents who was more successful at completing the island's major challenges during exploration. (Rulebook p. 25)">4.2 Tiebreaker: Most Trophies</div>
+        <div class="substep" data-detail="If the score and Trophy count are both tied, Tingent automatically wins. This gives the AI opponent the advantage in extremely close games and represents the efficiency of the Society's automated exploration methods. (Rulebook p. 25)">4.3 Second Tiebreaker: Tingent Wins</div>
+        <div class="substep" data-detail="Based on your result, consider adjusting difficulty for future solo games. If you won easily, try a harder Tingent. If you lost badly, try an easier one. You can also add Scenario Modules for additional challenge variations. (Rulebook p. 26)">4.4 Adjust Future Difficulty</div>
+      </div>
+      <div class="details" id="scoring-details">
+        <h2>Details</h2>
+        <p id="scoring-detailText">At game end, calculate your score using normal rules, then calculate Tingent's score using modified rules. Tingent scores differently than normal players - it gets points for face-up cards, Achievements, Trophies, and Eggs, plus bonus points for face-down cards based on difficulty level. Compare final scores to determine the winner. (Rulebook p. 25)</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTab = 'turn-flow';
+    let selectedIndex = 0;
+    let selectedSetupIndex = 0;
+    let selectedScoringIndex = 0;
+
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const upButton = document.getElementById('upButton');
+    const downButton = document.getElementById('downButton');
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      
+      // Update tab buttons
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+      });
+      
+      // Update tab content
+      tabContents.forEach(content => {
+        content.classList.toggle('active', content.id === tabName);
+      });
+      
+      // Reset selection and update
+      const currentIndex = getCurrentIndex();
+      const steps = getCurrentSteps();
+      if (currentIndex >= steps.length) {
+        setCurrentIndex(0);
+      }
+      updateSelection();
+    }
+
+    function getTurnFlowSteps() {
+      return document.querySelectorAll('#turn-flow .step, #turn-flow .substep');
+    }
+
+    function getSetupSteps() {
+      return document.querySelectorAll('#setup .step, #setup .substep');
+    }
+
+    function getScoringSteps() {
+      return document.querySelectorAll('#scoring .step, #scoring .substep');
+    }
+
+    function getCurrentSteps() {
+      switch(currentTab) {
+        case 'turn-flow': return getTurnFlowSteps();
+        case 'setup': return getSetupSteps();
+        case 'scoring': return getScoringSteps();
+        default: return getTurnFlowSteps();
+      }
+    }
+
+    function getCurrentIndex() {
+      switch(currentTab) {
+        case 'turn-flow': return selectedIndex;
+        case 'setup': return selectedSetupIndex;
+        case 'scoring': return selectedScoringIndex;
+        default: return selectedIndex;
+      }
+    }
+
+    function setCurrentIndex(index) {
+      switch(currentTab) {
+        case 'turn-flow': selectedIndex = index; break;
+        case 'setup': selectedSetupIndex = index; break;
+        case 'scoring': selectedScoringIndex = index; break;
+      }
+    }
+
+    function updateSelection() {
+      const steps = getCurrentSteps();
+      const currentIndex = getCurrentIndex();
+      const detailTextId = currentTab === 'turn-flow' ? 'detailText' : 
+                          currentTab === 'setup' ? 'setup-detailText' : 'scoring-detailText';
+      const detailText = document.getElementById(detailTextId);
+      
+      steps.forEach((step, i) => {
+        step.classList.toggle('selected', i === currentIndex);
+      });
+      
+      // Format the detail text for better readability
+      let rawText = steps[currentIndex]?.dataset.detail || '';
+      let formattedText = formatDetailText(rawText);
+      detailText.innerHTML = formattedText;
+      
+      // Scroll the selected item into view
+      const selectedStep = steps[currentIndex];
+      if (selectedStep) {
+        selectedStep.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      }
+    }
+
+    function formatDetailText(text) {
+      // Extract page reference
+      let pageMatch = text.match(/\(Rulebook p\. ([^)]+)\)/);
+      let pageRef = pageMatch ? `<span class="page-ref">Rulebook p. ${pageMatch[1]}</span>` : '';
+      let cleanText = text.replace(/\(Rulebook p\. [^)]+\)/, '').trim();
+      
+      // Check for explicit bullet points first
+      if (cleanText.includes('•')) {
+        let parts = cleanText.split('•').filter(part => part.trim());
+        let introText = parts[0].trim();
+        let bulletItems = parts.slice(1);
+        
+        let formattedIntro = introText
+          .replace(/\b(Tingent|Basic Action|Free Action|Crew Member|Captain|Achievement|Recharge|reserve|Wilderness|Time Tracker|Target Token|Tingent Card|Tingent Board)\b/g, '<em>$1</em>')
+          .replace(/\b(must|cannot|may|immediately|exactly|choose|place|gain|activate|draw|collect|complete)\b/gi, '<strong>$1</strong>')
+          .replace(/\b(\d+\s*VPs?|\d+\s*cards?|\d+\s*resources?|\d+\s*Eggs?|\d+\s*Trophies?)\b/g, '<strong>$1</strong>');
+        
+        let bulletPoints = bulletItems.map(item => {
+          let formatted = item.trim()
+            .replace(/\b(Tingent|Basic Action|Free Action|Crew Member|Captain|Achievement|Recharge|reserve|Wilderness|Time Tracker|Target Token|Tingent Card|Tingent Board|Yellow Area|Brown Area|Red Gear)\b/g, '<em>$1</em>')
+            .replace(/\b(must|cannot|may|immediately|exactly|choose|place|gain|activate|draw|collect|complete|follow|advance)\b/gi, '<strong>$1</strong>')
+            .replace(/\b(\d+\s*VPs?|\d+\s*cards?|\d+\s*resources?|\d+\s*Eggs?|\d+\s*Trophies?|\d+\s*players?)\b/g, '<strong>$1</strong>');
+          return `<li>${formatted}</li>`;
+        }).join('');
+        
+        return `<p>${formattedIntro}</p><ul>${bulletPoints}</ul>${pageRef}`;
+      }
+      
+      // Split into sentences and create bullet points
+      let sentences = cleanText.split(/(?<=[.!?])\s+(?=[A-Z])/);
+      
+      if (sentences.length <= 2) {
+        // Short text - just format as paragraph with emphasis
+        let formatted = cleanText
+          .replace(/\b(Tingent|Basic Action|Free Action|Crew Member|Captain|Achievement|Recharge|reserve|Wilderness|Time Tracker|Target Token|Tingent Card|Tingent Board)\b/g, '<em>$1</em>')
+          .replace(/\b(must|cannot|may|immediately|exactly|choose|place|gain|activate|draw|collect|complete)\b/gi, '<strong>$1</strong>')
+          .replace(/\b(\d+\s*VPs?|\d+\s*cards?|\d+\s*resources?|\d+\s*Eggs?|\d+\s*Trophies?)\b/g, '<strong>$1</strong>');
+        return `<p>${formatted}</p>${pageRef}`;
+      }
+      
+      // Longer text - create bullet list
+      let bulletPoints = sentences.map(sentence => {
+        let formatted = sentence.trim()
+          .replace(/\b(Tingent|Basic Action|Free Action|Crew Member|Captain|Achievement|Recharge|reserve|Wilderness|Time Tracker|Target Token|Tingent Card|Tingent Board|Yellow Area|Brown Area|Red Gear)\b/g, '<em>$1</em>')
+          .replace(/\b(must|cannot|may|immediately|exactly|choose|place|gain|activate|draw|collect|complete|follow|advance)\b/gi, '<strong>$1</strong>')
+          .replace(/\b(\d+\s*VPs?|\d+\s*cards?|\d+\s*resources?|\d+\s*Eggs?|\d+\s*Trophies?|\d+\s*players?)\b/g, '<strong>$1</strong>');
+        return `<li>${formatted}</li>`;
+      }).join('');
+      
+      return `<ul>${bulletPoints}</ul>${pageRef}`;
+    }
+
+    // Tab click handlers
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchTab(tab.dataset.tab);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const steps = getCurrentSteps();
+      const currentIndex = getCurrentIndex();
+      
+      if (e.key === 'ArrowUp') {
+        const newIndex = (currentIndex - 1 + steps.length) % steps.length;
+        setCurrentIndex(newIndex);
+        updateSelection();
+      } else if (e.key === 'ArrowDown') {
+        const newIndex = (currentIndex + 1) % steps.length;
+        setCurrentIndex(newIndex);
+        updateSelection();
+      }
+    });
+
+    upButton.addEventListener('click', () => {
+      const steps = getCurrentSteps();
+      const currentIndex = getCurrentIndex();
+      const newIndex = (currentIndex - 1 + steps.length) % steps.length;
+      setCurrentIndex(newIndex);
+      updateSelection();
+    });
+
+    downButton.addEventListener('click', () => {
+      const steps = getCurrentSteps();
+      const currentIndex = getCurrentIndex();
+      const newIndex = (currentIndex + 1) % steps.length;
+      setCurrentIndex(newIndex);
+      updateSelection();
+    });
+
+    // Initialize
+    updateSelection();
+  </script>
+</body>
+</html> 
